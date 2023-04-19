@@ -1,3 +1,4 @@
+from django.db import transaction, IntegrityError
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework.validators import UniqueTogetherValidator
 from rest_framework import serializers
@@ -177,6 +178,14 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
                    'ingredient': 'Ингредиенты должны быть уникальными!'
                 })
             list.append(i['id'])
+        if data['cooking_time'] < 0:
+            raise serializers.ValidationError({
+                'cooking_time': 'Время приготовления должно быть неотрицательным!'
+            })
+        if not data.get('ingredients'):
+            raise serializers.ValidationError({
+                'ingredients': 'Должен быть указан хотя бы один ингредиент!'
+            })
         return data
 
     def create_ingredients(self, ingredients, recipe):
@@ -195,14 +204,17 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         Создание рецепта.
         Доступно только авторизированному пользователю.
         """
-
-        ingredients = validated_data.pop('ingredients')
-        tags = validated_data.pop('tags')
-        author = self.context.get('request').user
-        recipe = Recipe.objects.create(author=author, **validated_data)
-        self.create_ingredients(ingredients, recipe)
-        self.create_tags(tags, recipe)
-        return recipe
+        try:
+            with transaction.atomic():
+                ingredients = validated_data.pop('ingredients')
+                tags = validated_data.pop('tags')
+                author = self.context.get('request').user
+                recipe = Recipe.objects.create(author=author, **validated_data)
+                self.create_ingredients(ingredients, recipe)
+                self.create_tags(tags, recipe)
+                return recipe
+        except IntegrityError:
+            raise Exception('Ошибка создания рецепта')
 
     def update(self, instance, validated_data):
         """

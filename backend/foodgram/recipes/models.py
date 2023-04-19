@@ -5,19 +5,6 @@ from autoslug import AutoSlugField
 User = get_user_model()
 
 
-class Recipe(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recipes')
-    title = models.CharField(max_length=200)
-    image = models.ImageField(upload_to='recipes/')
-    description = models.TextField()
-    ingredients = models.ManyToManyField('IngredientAmount', related_name='recipes')
-    tags = models.ManyToManyField('Tag', related_name='recipes')
-    cooking_time = models.PositiveIntegerField()
-
-    def __str__(self):
-        return self.title
-
-
 class Ingredient(models.Model):
     GRAM = 'г'
     KILOGRAM = 'кг'
@@ -38,10 +25,29 @@ class Ingredient(models.Model):
     )
 
     name = models.CharField(max_length=200)
-    measurement_unit = models.CharField(max_length=5, choices=MEASUREMENT_UNITS)
+    measurement_unit = models.CharField(max_length=200, choices=MEASUREMENT_UNITS)
+
+    class Meta:
+        unique_together = ('name', 'measurement_unit')
 
     def __str__(self):
         return self.name
+
+class Recipe(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recipes')
+    title = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='recipes/')
+    description = models.TextField()
+    ingredients = models.ManyToManyField(
+        Ingredient,
+        through='IngredientAmount',
+        verbose_name='Ингредиенты',
+    )
+    tags = models.ManyToManyField('Tag', related_name='recipes')
+    cooking_time = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.title
 
 
 class IngredientAmount(models.Model):

@@ -25,7 +25,7 @@ from .serializers import (CreateRecipeSerializer, FavoriteSerializer,
 class SubscribeView(APIView):
     """ Операция подписки/отписки. """
 
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = (IsAuthenticated, )
 
     def post(self, request, id):
         data = {

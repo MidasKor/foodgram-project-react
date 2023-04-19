@@ -3,20 +3,23 @@ from django.utils.html import format_html
 
 from .models import Recipe, Ingredient, IngredientAmount, Tag, Favorite
 
+class IngredientsInLine(admin.TabularInline):
+    model = Recipe.ingredients.through
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author', 'get_image', 'cooking_time')
-    list_filter = ('author', 'tags')
-    search_fields = ('title', 'author__username', 'tags__name')
-    autocomplete_fields = ('author', 'tags')
+    list_display = ['id', 'title', 'author', 'favorites']
+    search_fields = ['name', 'author__username']
+    list_filter = ['tags']
+    inlines = (
+        IngredientsInLine,
+    )
 
-    def get_image(self, obj):
-        if obj.image:
-            return format_html('<img src="{}" width="50" height="50" />'.format(obj.image.url))
-        else:
-            return ''
-    get_image.short_description = 'Изображение'
+    def favorites(self, obj):
+        if Favorite.objects.filter(recipe=obj).exists():
+            return Favorite.objects.filter(recipe=obj).count()
+        return 0
+
 
 
 @admin.register(Ingredient)
