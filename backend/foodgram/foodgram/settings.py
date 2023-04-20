@@ -30,7 +30,7 @@ SECRET_KEY = '!m(ou332^e*k5k!qk3dw$+2et+m^$&$$r=q+ol3l=8&yvzogol'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
