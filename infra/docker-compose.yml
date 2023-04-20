@@ -44,6 +44,6 @@ services:
     restart: always
 
 volumes:
-  db_value:
+  database_value:
   static_value:
   media_value:
