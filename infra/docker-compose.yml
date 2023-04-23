@@ -7,7 +7,7 @@ services:
     env_file:
       - .env
     ports:
-      - 5432:5432
+      - 5433:5432
 
   backend:
     image: midaskor/foodgram_backend:latest
@@ -21,12 +21,11 @@ services:
     restart: always
 
   frontend:
-    image: midaskor/foodgram_frontend:latest
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: ruzhova/frontend:v1
     volumes:
       - ../frontend/:/app/result_build/
+    depends_on:
+      - db
 
   nginx:
     image: nginx:1.19.3
@@ -47,3 +46,4 @@ volumes:
   database_value:
   static_value:
   media_value:
+  

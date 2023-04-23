@@ -1,4 +1,5 @@
 from django.db import transaction, IntegrityError
+from django.core.files.base import ContentFile
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework.validators import UniqueTogetherValidator
 from rest_framework import serializers
@@ -15,6 +16,8 @@ from recipes.models import (
     ShoppingCart,
     RecipeTag
 )
+
+import base64
 
 class FoodgramUserCreateSerializer(serializers.ModelSerializer):
     """ Сериализатор создания пользователя. """
@@ -209,7 +212,13 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
                 ingredients = validated_data.pop('ingredients')
                 tags = validated_data.pop('tags')
                 author = self.context.get('request').user
-                recipe = Recipe.objects.create(author=author, **validated_data)
+                image = validated_data.pop('image')
+                image_data = image.read()
+                base64_image = base64.b64encode(image_data).decode('utf-8')
+
+                recipe = Recipe.objects.create(
+                    author=author, image=base64_image, **validated_data
+                )
                 self.create_ingredients(ingredients, recipe)
                 self.create_tags(tags, recipe)
                 return recipe
@@ -237,9 +246,17 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         return instance
 
     def to_representation(self, instance):
-        return RecipeSerializer(instance, context={
+        data = RecipeSerializer(instance, context={
             'request': self.context.get('request')
         }).data
+
+        # Конвертируем изображение из строки base64 в объект изображения
+        image = instance.image
+        if image:
+            image_data = base64.b64decode(image)
+            data['image'] = ContentFile(image_data, name=instance.title)
+
+        return data
 
 
 class ShowFavoriteSerializer(serializers.ModelSerializer):
