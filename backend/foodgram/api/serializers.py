@@ -106,9 +106,9 @@ class RecipeSerializer(serializers.ModelSerializer):
             'ingredients',
             'is_favorited',
             'is_in_shopping_cart',
-            'title',
+            'name',
             'image',
-            'description',
+            'text',
             'cooking_time'
         ]
 
@@ -231,8 +231,8 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         tags = validated_data.pop('tags')
         self.create_ingredients(ingredients, instance)
         self.create_tags(tags, instance)
-        instance.title = validated_data.pop('title')
-        instance.description = validated_data.pop('description')
+        instance.name = validated_data.pop('name')
+        instance.text = validated_data.pop('text')
         if validated_data.get('image'):
             instance.image = validated_data.pop('image')
         instance.cooking_time = validated_data.pop('cooking_time')

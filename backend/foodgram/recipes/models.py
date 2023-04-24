@@ -46,7 +46,7 @@ class Recipe(models.Model):
     cooking_time = models.PositiveIntegerField()
 
     def __str__(self):
-        return self.title
+        return self.name
 
 
 class IngredientAmount(models.Model):
@@ -89,7 +89,7 @@ class Favorite(models.Model):
         unique_together = ['user', 'recipe']
     
     def __str__(self):
-        return f'{self.recipe.title} - {self.user.username}'
+        return f'{self.recipe.name} - {self.user.username}'
 
 
 class RecipeTag(models.Model):
