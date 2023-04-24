@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 
 class FoodgramUser(AbstractUser):
@@ -6,6 +7,10 @@ class FoodgramUser(AbstractUser):
     password = models.CharField(max_length=150, blank=False)
     first_name = models.CharField(max_length=150, blank=False)
     last_name = models.CharField(max_length=150, blank=False)
+    username = models.CharField(
+        'Юзернейм',
+        max_length=150,
+        validators=[UnicodeUsernameValidator])
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'password']

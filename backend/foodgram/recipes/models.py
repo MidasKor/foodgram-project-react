@@ -1,8 +1,7 @@
 from django.db import models
-from django.contrib.auth import get_user_model
+from users.models import FoodgramUser
 from autoslug import AutoSlugField
 
-User = get_user_model()
 
 
 class Ingredient(models.Model):
@@ -34,10 +33,10 @@ class Ingredient(models.Model):
         return self.name
 
 class Recipe(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recipes')
-    title = models.CharField(max_length=200)
+    author = models.ForeignKey(FoodgramUser, on_delete=models.CASCADE, related_name='recipes')
+    name = models.CharField(max_length=200)
     image = models.ImageField(upload_to='recipes/')
-    description = models.TextField()
+    text = models.TextField()
     ingredients = models.ManyToManyField(
         Ingredient,
         through='IngredientAmount',
@@ -72,7 +71,7 @@ class Favorite(models.Model):
     """ Модель избранного. """
 
     user = models.ForeignKey(
-        User,
+        FoodgramUser,
         on_delete=models.CASCADE,
         verbose_name='Пользователь',
         related_name='favorites',
@@ -112,7 +111,7 @@ class RecipeTag(models.Model):
 
 class ShoppingCart(models.Model):
     user = models.ForeignKey(
-        User,
+        FoodgramUser,
         on_delete=models.CASCADE,
         related_name='shopping_cart',
         verbose_name='Пользователь',

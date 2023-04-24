@@ -8,7 +8,7 @@ class IngredientsInLine(admin.TabularInline):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'author', 'favorites']
+    list_display = ['id', 'name', 'author', 'favorites']
     search_fields = ['name', 'author__username']
     list_filter = ['tags']
     inlines = (

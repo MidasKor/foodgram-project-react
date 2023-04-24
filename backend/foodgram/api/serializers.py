@@ -162,8 +162,8 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
             'ingredients',
             'tags',
             'image',
-            'title',
-            'description',
+            'name',
+            'text',
             'cooking_time'
         ]
 
@@ -212,13 +212,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
                 ingredients = validated_data.pop('ingredients')
                 tags = validated_data.pop('tags')
                 author = self.context.get('request').user
-                image = validated_data.pop('image')
-                image_data = image.read()
-                base64_image = base64.b64encode(image_data).decode('utf-8')
-
-                recipe = Recipe.objects.create(
-                    author=author, image=base64_image, **validated_data
-                )
+                recipe = Recipe.objects.create(author=author, **validated_data)
                 self.create_ingredients(ingredients, recipe)
                 self.create_tags(tags, recipe)
                 return recipe
@@ -246,17 +240,9 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         return instance
 
     def to_representation(self, instance):
-        data = RecipeSerializer(instance, context={
+        return RecipeSerializer(instance, context={
             'request': self.context.get('request')
         }).data
-
-        # Конвертируем изображение из строки base64 в объект изображения
-        image = instance.image
-        if image:
-            image_data = base64.b64decode(image)
-            data['image'] = ContentFile(image_data, name=instance.title)
-
-        return data
 
 
 class ShowFavoriteSerializer(serializers.ModelSerializer):
