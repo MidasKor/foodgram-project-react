@@ -137,6 +137,7 @@ DJOSER = {
         'user_list': ['rest_framework.permissions.AllowAny'],
     },
     'HIDE_USERS': False,
+    'LOGIN_FIELD': 'email',
 }
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
