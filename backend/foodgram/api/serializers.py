@@ -1,4 +1,5 @@
 from django.db import transaction, IntegrityError
+from djoser.serializers import UserCreateSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework.validators import UniqueTogetherValidator
 from rest_framework import serializers
@@ -18,7 +19,7 @@ from recipes.models import (
 
 import base64
 
-class FoodgramUserCreateSerializer(serializers.ModelSerializer):
+class FoodgramUserCreateSerializer(UserCreateSerializer):
     """ Сериализатор создания пользователя. """
 
     class Meta:
