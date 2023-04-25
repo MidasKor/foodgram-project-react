@@ -1,5 +1,4 @@
 from django.db import transaction, IntegrityError
-from django.core.files.base import ContentFile
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework.validators import UniqueTogetherValidator
 from rest_framework import serializers

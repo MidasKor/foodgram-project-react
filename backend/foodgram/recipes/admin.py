@@ -37,5 +37,5 @@ class TagAdmin(admin.ModelAdmin):
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('user', 'recipe')
-    search_fields = ('user__username', 'name')
+    search_fields = ('user__username', 'recipe_name')
 

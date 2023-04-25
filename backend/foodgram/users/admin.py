@@ -5,7 +5,7 @@ from .models import FoodgramUser, Subscription
 
 
 @admin.register(FoodgramUser)
-class UserAdmin(admin.ModelAdmin):
+class FoodgramUserAdmin(admin.ModelAdmin):
     list_display = ['username', 'email', 'first_name', 'last_name']
     search_fields = ['username', 'email']
     list_filter = ['username', 'email']
