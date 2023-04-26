@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 from django.contrib.auth import get_user_model
 from autoslug import AutoSlugField
 
@@ -32,6 +33,15 @@ class Ingredient(models.Model):
     def __str__(self):
         return self.name
 
+
+class Tag(models.Model):
+    name = models.CharField(max_length=20, unique=True)
+    slug = AutoSlugField(populate_from='name', unique=True, null=True)
+    color = models.CharField(max_length=7)
+
+    def __str__(self):
+        return self.name
+
 class Recipe(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recipes')
     name = models.CharField(max_length=200)
@@ -43,11 +53,14 @@ class Recipe(models.Model):
         verbose_name='Ингредиенты',
     )
     tags = models.ManyToManyField('Tag', related_name='recipes')
-    cooking_time = models.PositiveIntegerField()
-
+    cooking_time = models.PositiveIntegerField(
+        verbose_name='Время приготовления',
+        validators=[MinValueValidator(
+            1, message='Время приготовления должно быть не менее 1 минуты!'
+        )]
+    )
     def __str__(self):
         return self.name
-
 
 class IngredientAmount(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, null=True)
@@ -56,16 +69,6 @@ class IngredientAmount(models.Model):
 
     def __str__(self):
         return f'{self.ingredient.name} - {self.amount} {self.ingredient.measurement_unit}'
-
-
-class Tag(models.Model):
-    name = models.CharField(max_length=20, unique=True)
-    slug = AutoSlugField(populate_from='name', unique=True, null=True)
-    color = models.CharField(max_length=7)
-
-    def __str__(self):
-        return self.name
-
 
 class Favorite(models.Model):
     """ Модель избранного. """
